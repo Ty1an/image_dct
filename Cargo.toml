@@ -1,6 +1,6 @@
 [package]
 name = "image_dct"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Tylan Smith https://github.com/Ty1an"]
 description = "Simple Rust implementation for getting the DCT coefficients of an image"
 readme = "README.md"
