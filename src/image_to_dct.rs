@@ -1,25 +1,24 @@
 use image::{Rgb, RgbImage};
 use rustdct::DctPlanner;
 
-
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy)]
 pub struct YCbCr {
     pub pixel: [u8; 3],
 }
 
 impl YCbCr {
+    // Convert the RGB pixel to YCbCr
     pub fn new(pixel: &Rgb<u8>) -> YCbCr {
         let r = pixel[0] as f64;
         let g = pixel[1] as f64;
         let b = pixel[2] as f64;
-    
+
         let y = (0.299 * r + 0.587 * g + 0.114 * b).round() as u8;
         let cb = (-0.169 * r - 0.331 * g + 0.5 * b + 128.0).round() as u8;
         let cr = (0.5 * r - 0.419 * g - 0.081 * b + 128.0).round() as u8;
 
         YCbCr { pixel: [y, cb, cr] }
     }
-
 
     pub fn get_cb(&self) -> u8 {
         self.pixel[1]
@@ -28,27 +27,24 @@ impl YCbCr {
     pub fn get_cr(&self) -> u8 {
         self.pixel[2]
     }
-
 }
 
-
-pub struct  ImageDct {
+pub struct ImageDct {
     pub image: RgbImage,
     pub grayscale_vec: Vec<f32>,
     pub ycbcr_vec: Vec<YCbCr>,
-    pub dct_coefficents : Vec<f32>,
+    pub dct_coefficents: Vec<f32>,
     pub reconstructed_image_vec: Vec<f32>,
-    dct_planner: DctPlanner<f32>
+    dct_planner: DctPlanner<f32>,
 }
 
 impl ImageDct {
     pub fn new(image: RgbImage) -> ImageDct {
-        
-        
         let (width, height) = &image.dimensions();
         let mut grayscale_vec = vec![0.0; (width * height) as usize];
         let mut ycbcr_vec: Vec<YCbCr> = vec![YCbCr { pixel: [0, 0, 0] }; (width * height) as usize];
-        // Convert the image to a 2D array of grayscale values
+
+        // Convert the image to a Vec of grayscale values and store the YCbCr pixel values for reconstruction
         for (x, y, pixel) in image.enumerate_pixels() {
             let ycbcr = YCbCr::new(&pixel);
             ycbcr_vec[(y * width + x) as usize] = ycbcr;
@@ -56,12 +52,12 @@ impl ImageDct {
         }
 
         ImageDct {
-            image: image,
-            grayscale_vec: grayscale_vec,
-            ycbcr_vec: ycbcr_vec,
+            image,
+            grayscale_vec,
+            ycbcr_vec,
             dct_coefficents: vec![0.0; (width * height) as usize],
             reconstructed_image_vec: vec![0.0; (width * height) as usize],
-            dct_planner: DctPlanner::new()
+            dct_planner: DctPlanner::new(),
         }
     }
 
@@ -91,7 +87,9 @@ impl ImageDct {
             let index = (y * self.width() + x) as usize;
             let value = self.reconstructed_image_vec[index];
             let r = (value + 1.402 * (self.ycbcr_vec[index].get_cr() as f32 - 128.0)).round() as u8;
-            let g = (value - 0.34414 * (self.ycbcr_vec[index].get_cb() as f32 - 128.0) - 0.71414 * (self.ycbcr_vec[index].get_cr() as f32 - 128.0)).round() as u8;
+            let g = (value - 0.34414 * 
+                (self.ycbcr_vec[index].get_cb() as f32 - 128.0) - 0.71414 * 
+                (self.ycbcr_vec[index].get_cr() as f32 - 128.0)).round() as u8;
             let b = (value + 1.772 * (self.ycbcr_vec[index].get_cb() as f32 - 128.0)).round() as u8;
             let rgb = Rgb([r, g, b]);
             *pixel = rgb;
@@ -99,12 +97,11 @@ impl ImageDct {
         img_buffer
     }
 
-
     pub fn width(&self) -> u32 {
         self.image.width()
     }
 
     pub fn height(&self) -> u32 {
-        self.image.height() 
+        self.image.height()
     }
 }
