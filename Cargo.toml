@@ -1,7 +1,18 @@
 [package]
 name = "image_dct"
 version = "0.1.0"
+authors = ["Tylan Smith https://github.com/Ty1an"]
+description = "Simple Rust implementation for getting the DCT coefficients of an image"
+readme = "README.md"
+repository = "https://github.com/Ty1an/image_dct"
+license = "MIT"
+keywords = ["dct", "images", "processing"]
+exclude = ["images/", "src/main.rs"]
 edition = "2021"
+
+[lib]
+name = "image_dct"
+path = "src/lib.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
