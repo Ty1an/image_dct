@@ -2,10 +2,6 @@
 
 Simple Rust implementation for getting DCT coefficients of an image and reconstructing it.
 
-Dependent on [image](https://crates.io/crates/image), [rustdct](https://crates.io/crates/rustdct) crates.
-
-Repository: [Ty1an/image_dct](https://github.com/Ty1an/image_dct)
-
 # Install
 ```bash
 cargo add image_dct
